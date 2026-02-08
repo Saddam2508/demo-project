@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect, ReactNode } from "react";
-import { Header } from "@/views/public/header";
-import { Footer } from "@/views/public/footer";
-import { BottomNav } from "@/views/public/bottomNav";
-import { ArrowUp } from "lucide-react"; // scroll up icon
+import { useState, useEffect, ReactNode } from 'react';
+import { Header } from '@/views/public/header';
+import { Footer } from '@/views/public/footer';
+import { BottomNav } from '@/views/public/bottomNav';
+import { ArrowUp } from 'lucide-react'; // scroll up icon
 
 const HEADER_HEIGHT = 58;
 const BOTTOM_NAV_HEIGHT = 56;
@@ -22,21 +22,21 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
       setIsDesktop(window.innerWidth >= 768);
     };
     handleResize();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -50,11 +50,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
       </header>
 
       {/* sidebar */}
-      <aside className="w-64 bg-amber-200 h-screen fixed top-0 left-0">
-        Sidebar
-      </aside>
-      {/* right sidebar */}
-      <aside className="w-64 bg-amber-200 h-screen fixed top-0 right-0">
+      <aside className="w-40 bg-amber-200 h-screen fixed top-0 left-0">
         Sidebar
       </aside>
 
@@ -62,8 +58,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
       <main
         className="flex-1 w-full overflow-x-hidden"
         style={{
-          paddingRight: 270,
-          paddingLeft: 270,
+          paddingLeft: 160,
           paddingTop: HEADER_HEIGHT,
           paddingBottom: !isDesktop ? BOTTOM_NAV_HEIGHT + 16 : 24,
         }}
