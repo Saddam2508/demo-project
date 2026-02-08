@@ -1,14 +1,26 @@
 'use client';
 
-import { useAppDispatch } from '@/hook/hooks';
+import {
+  createBanner,
+  fetchBanner,
+  updateBanner,
+} from '@/features/banner/bannerSlice';
+import { useAppDispatch, useAppSelector } from '@/hook/hooks';
 import Image from 'next/image';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, MouseEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const BannerSetting: FC = () => {
   const dispatch = useAppDispatch();
+  const {
+    banners,
+    fetch,
+    create,
+    update,
+    delete: del,
+  } = useAppSelector((state) => state.banner);
 
   interface BannerForm {
-    _id: string;
     title: string;
     subTitle: string;
     link: '';
@@ -19,7 +31,6 @@ const BannerSetting: FC = () => {
   }
 
   const initialForm: BannerForm = {
-    _id: '',
     title: '',
     subTitle: '',
     link: '',
@@ -55,8 +66,43 @@ const BannerSetting: FC = () => {
     }
   };
 
+  // submit handler
+
+  const handleSubmit = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const fd = new FormData();
+
+    if (forData.title) fd.append('title', forData.title);
+    if (forData.subTitle) fd.append('subTitle', forData.subTitle);
+    if (forData.link) fd.append('link', forData.link);
+    if (forData.position) fd.append('position', forData.position.toString());
+    if (forData.isActive) fd.append('isActive', forData.isActive.toString());
+    if (forData.image) fd.append('image', forData.image);
+    if (editIndex) {
+      dispatch(updateBanner({ id: editIndex, data: fd }))
+        .unwrap()
+        .then(() => {
+          setEditIndex('');
+          toast.success('Banner update successfully');
+        })
+        .catch(() => {
+          toast.error('Banner update failed');
+        });
+    } else {
+      dispatch(createBanner(fd))
+        .unwrap()
+        .then(() => {
+          toast.success('Banner create successfully');
+        })
+        .catch(() => {
+          toast.error('Banner create failed');
+        });
+    }
+  };
+
   return (
-    <div className="pt-7 flex justify-center">
+    <div className="container pt-7 flex justify-center">
       <form action="" className="bg-gray-100 w-2xl rounded-lg shadow-md p-6 ">
         <fieldset className="flex gap-2 justify-start items-center mb-4">
           {' '}
