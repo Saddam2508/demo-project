@@ -1,6 +1,7 @@
 'use client';
 
 import { useAppDispatch } from '@/hook/hooks';
+import Image from 'next/image';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 const BannerSetting: FC = () => {
@@ -36,7 +37,21 @@ const BannerSetting: FC = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
     if (name === 'image' && files?.[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        image: files?.[0],
+        previewImage: URL.createObjectURL(files?.[0]),
+      }));
     } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]:
+          type === 'number'
+            ? Number(value)
+            : type === 'checkbox'
+              ? checked
+              : value,
+      }));
     }
   };
 
@@ -49,6 +64,8 @@ const BannerSetting: FC = () => {
           <input
             type="text"
             name="title"
+            value={forData.title}
+            onChange={handleChange}
             className="bg-white p-2 rounded-lg outline-0 focus:ring-2 focus:ring-red-500 "
           />
         </fieldset>
@@ -58,6 +75,8 @@ const BannerSetting: FC = () => {
           <input
             type="text"
             name="subTitle"
+            value={forData.subTitle}
+            onChange={handleChange}
             className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500"
           />
         </fieldset>
@@ -67,6 +86,8 @@ const BannerSetting: FC = () => {
           <input
             type="url"
             name="link"
+            value={forData.link}
+            onChange={handleChange}
             className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500 "
           />
         </fieldset>
@@ -76,6 +97,8 @@ const BannerSetting: FC = () => {
           <input
             type="number"
             name="position"
+            value={forData.position}
+            onChange={handleChange}
             className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500 "
           />
         </fieldset>
@@ -83,7 +106,13 @@ const BannerSetting: FC = () => {
           <label htmlFor="" className="">
             Active
           </label>
-          <input type="checkbox" name="isActive" id="" />
+          <input
+            type="checkbox"
+            name="isActive"
+            id="isActive"
+            checked={forData.isActive}
+            onChange={handleChange}
+          />
         </fieldset>
         <fieldset className="flex gap-2 justify-start items-center mb-4">
           <label htmlFor="" className="">
@@ -99,10 +128,35 @@ const BannerSetting: FC = () => {
           </label>
           <input
             type="file"
-            name="isActive"
+            name="image"
             id="imageUpload"
             className="hidden"
+            onChange={handleChange}
           />
+          <div>
+            {forData.previewImage && (
+              <>
+                <Image
+                  loader={({ src }) => src}
+                  src={forData.previewImage}
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+                <button
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      image: null,
+                      previewImage: '',
+                    }));
+                  }}
+                >
+                  Remove
+                </button>
+              </>
+            )}
+          </div>
         </fieldset>
 
         <fieldset className="flex gap-2 justify-start items-center mb-4">
