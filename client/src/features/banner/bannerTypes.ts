@@ -1,7 +1,12 @@
 export interface Banner {
   _id: string;
   title: string;
-  image: string;
+  subTitle: string;
+  link: '';
+  position: number;
+  isActive: boolean;
+  image: File | null;
+  previewImage: string;
   [key: string]: unknown;
 }
 
