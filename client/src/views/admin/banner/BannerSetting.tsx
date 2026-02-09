@@ -303,6 +303,7 @@ const BannerSetting: FC = () => {
             <tbody>
               {banners.map((banner, index) => (
                 <tr key={banner._id} className="border-b">
+                  <td className="p-2"> {index + 1} </td>
                   <td className="p-2">{banner.title}</td>
                   <td className="p-2">{banner.subTitle}</td>
                   <td className="p-2">{banner.link}</td>

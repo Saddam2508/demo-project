@@ -5,12 +5,12 @@ export interface Banner {
   link: '';
   position: number;
   isActive: boolean;
-  image: File | null;
+  image: '';
   previewImage: string;
   [key: string]: unknown;
 }
 
-type AsyncStatusValue = "idle" | "pending" | "fulfilled" | "rejected";
+type AsyncStatusValue = 'idle' | 'pending' | 'fulfilled' | 'rejected';
 
 interface AsyncStatus {
   status: AsyncStatusValue;
