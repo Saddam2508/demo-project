@@ -7,7 +7,7 @@ import {
 } from '@/features/banner/bannerSlice';
 import { useAppDispatch, useAppSelector } from '@/hook/hooks';
 import Image from 'next/image';
-import React, { ChangeEvent, FC, MouseEvent, useState } from 'react';
+import React, { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const BannerSetting: FC = () => {
@@ -68,7 +68,7 @@ const BannerSetting: FC = () => {
 
   // submit handler
 
-  const handleSubmit = (e: MouseEvent<HTMLDivElement>) => {
+  const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const fd = new FormData();
@@ -79,12 +79,20 @@ const BannerSetting: FC = () => {
     if (forData.position) fd.append('position', forData.position.toString());
     if (forData.isActive) fd.append('isActive', forData.isActive.toString());
     if (forData.image) fd.append('image', forData.image);
+
+    // for (const [key, value] of fd.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
+
+    // console.log(Object.fromEntries(fd.entries()));
+
     if (editIndex) {
       dispatch(updateBanner({ id: editIndex, data: fd }))
         .unwrap()
         .then(() => {
           setEditIndex('');
           toast.success('Banner update successfully');
+          setFormData(initialForm);
         })
         .catch(() => {
           toast.error('Banner update failed');
@@ -94,6 +102,7 @@ const BannerSetting: FC = () => {
         .unwrap()
         .then(() => {
           toast.success('Banner create successfully');
+          setFormData(initialForm);
         })
         .catch(() => {
           toast.error('Banner create failed');
@@ -208,12 +217,14 @@ const BannerSetting: FC = () => {
         <fieldset className="flex gap-2 justify-start items-center mb-4">
           <button
             type="submit"
+            onClick={(e) => handleSubmit(e)}
             className="bg-amber-400 py-1 px-2 rounded-lg cursor-pointer hover:bg-amber-500 text-white"
           >
             {editIndex ? 'Update' : 'Submit'}
           </button>
           <button
             type="reset"
+            onClick={() => setFormData(initialForm)}
             className="bg-red-300 py-1 px-2 rounded-lg cursor-pointer hover:bg-amber-500 text-white"
           >
             Reset

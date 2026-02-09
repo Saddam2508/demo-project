@@ -1,15 +1,19 @@
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import api from "@/store/axiosInstance";
+'use client';
 
-const refreshTokenAndRetry = async <T = unknown>(
+import api from '@/store/axiosInstance';
+import { store } from '@/store/store';
+import handleLogoutRedirect from '@/utils/handleLogoutRedirect';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+
+const refreshTokenAndRetry = async (
   originalRequest: AxiosRequestConfig
-): Promise<AxiosResponse<T>> => {
+): Promise<AxiosResponse> => {
   try {
-    await api.post("/admin/refresh-token"); // cookie auto পাঠাবে
-
-    return await api<T>(originalRequest);
+    await api.post('/refresh-token');
+    return api(originalRequest);
   } catch (error) {
-    throw new Error("Session expired. Please login again.");
+    await handleLogoutRedirect('admin', store.dispatch);
+    throw error;
   }
 };
 

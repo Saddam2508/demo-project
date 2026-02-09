@@ -1,4 +1,4 @@
-import { api } from "@/store";
+import  api  from "@/store/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Banner, BannerState } from "./bannerTypes";
 import { AxiosError } from "axios";
