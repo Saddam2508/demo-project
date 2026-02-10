@@ -48,7 +48,7 @@ const BannerSetting: FC = () => {
     previewImage: '',
   };
 
-  const [forData, setFormData] = useState<BannerForm>(initialForm);
+  const [formData, setFormData] = useState<BannerForm>(initialForm);
   const [editIndex, setEditIndex] = useState<string>('');
   const [error, setError] = useState<string>('');
 
@@ -87,12 +87,12 @@ const BannerSetting: FC = () => {
 
     const fd = new FormData();
 
-    if (forData.title) fd.append('title', forData.title);
-    if (forData.subTitle) fd.append('subTitle', forData.subTitle);
-    if (forData.link) fd.append('link', forData.link);
-    if (forData.position) fd.append('position', forData.position.toString());
-    if (forData.isActive) fd.append('isActive', forData.isActive.toString());
-    if (forData.image) fd.append('image', forData.image);
+    if (formData.title) fd.append('title', formData.title);
+    if (formData.subTitle) fd.append('subTitle', formData.subTitle);
+    if (formData.link) fd.append('link', formData.link);
+    if (formData.position) fd.append('position', formData.position.toString());
+    if (formData.isActive) fd.append('isActive', formData.isActive.toString());
+    if (formData.image) fd.append('image', formData.image);
 
     // for (const [key, value] of fd.entries()) {
     //   console.log(`${key}: ${value}`);
@@ -147,8 +147,6 @@ const BannerSetting: FC = () => {
     del.status === 'pending';
 
   const handleEdit = (id: string) => {
-    setEditIndex(id);
-    if (!editIndex) return null;
     const banner = banners.find((b) => b._id === id);
     if (!banner) {
       toast.error('Banner not found');
@@ -165,6 +163,7 @@ const BannerSetting: FC = () => {
         previewImage: banner.image || '',
       });
     }
+    setEditIndex(id);
   };
 
   // delete handler
@@ -189,7 +188,7 @@ const BannerSetting: FC = () => {
             <input
               type="text"
               name="title"
-              value={forData.title}
+              value={formData.title}
               onChange={handleChange}
               className="bg-white p-2 rounded-lg outline-0 focus:ring-2 focus:ring-red-500 "
             />
@@ -200,7 +199,7 @@ const BannerSetting: FC = () => {
             <input
               type="text"
               name="subTitle"
-              value={forData.subTitle}
+              value={formData.subTitle}
               onChange={handleChange}
               className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500"
             />
@@ -211,7 +210,7 @@ const BannerSetting: FC = () => {
             <input
               type="url"
               name="link"
-              value={forData.link}
+              value={formData.link}
               onChange={handleChange}
               className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500 "
             />
@@ -222,7 +221,7 @@ const BannerSetting: FC = () => {
             <input
               type="number"
               name="position"
-              value={forData.position}
+              value={formData.position}
               onChange={handleChange}
               className="bg-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-red-500 "
             />
@@ -235,7 +234,7 @@ const BannerSetting: FC = () => {
               type="checkbox"
               name="isActive"
               id="isActive"
-              checked={forData.isActive}
+              checked={formData.isActive}
               onChange={handleChange}
             />
           </fieldset>
@@ -248,7 +247,7 @@ const BannerSetting: FC = () => {
                 Choose File
               </span>
               <span className="bg-gray-400 text-white px-2 py-2 rounded-lg">
-                No File Chosen
+                {formData.image ? formData.image.name : 'No File Chosen'}
               </span>
             </label>
             <input
@@ -259,11 +258,11 @@ const BannerSetting: FC = () => {
               onChange={handleChange}
             />
             <div>
-              {forData.previewImage && (
+              {formData.previewImage && (
                 <>
                   <Image
                     loader={({ src }) => src}
-                    src={forData.previewImage}
+                    src={formData.previewImage}
                     alt=""
                     width={50}
                     height={50}
