@@ -1,33 +1,32 @@
 const deleteFile = require('../../utils/deleteFile');
 const Banner = require('../models/bannerModel');
 
+// ======================= CREATE BANNER =======================
 const createBanner = async (req, res) => {
   try {
     const { title, subTitle, link, position, isActive } = req.body || {};
 
-    const image = req.file ? req.file.path : null;
+    // Multer uploaded file থেকে public path তৈরি
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
     if (!title) {
       throw new Error('Title is required');
     }
     if (!image) {
       throw new Error('Image is required');
     }
-    if (image.size > 5 * 1024 * 1024) {
-      throw new Error('Image size should be less than 5MB');
-    }
-    //banner object create
+
     const bannerData = {
       title,
       subTitle,
       link,
-      position,
-      isActive,
+      position: Number(position) || 0,
+      isActive: isActive ? true : false,
       image,
     };
 
     const banner = await Banner.create(bannerData);
 
-    // Save bannerData to database
     res.status(201).json({
       success: true,
       message: 'Banner created successfully',
@@ -41,6 +40,7 @@ const createBanner = async (req, res) => {
   }
 };
 
+// ======================= GET BANNERS =======================
 const getBanners = async (req, res) => {
   try {
     const banners = await Banner.find();
@@ -57,30 +57,35 @@ const getBanners = async (req, res) => {
   }
 };
 
+// ======================= UPDATE BANNER =======================
 const updateBanner = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, subTitle, link, position, isActive } = req.body || {};
-    const image = req.file ? req.file.path : null;
+
+    // শুধুমাত্র যদি নতুন image আপলোড হয়, তখন path update হবে
+    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
     const updateData = {
       title,
       subTitle,
       link,
-      position,
-      isActive,
-      image,
+      position: Number(position) || 0,
+      isActive: isActive ? true : false,
+      ...(image && { image }), // image field update হবে শুধুমাত্র নতুন আপলোড হলে
     };
 
     const updatedBanner = await Banner.findByIdAndUpdate(id, updateData, {
       new: true,
     });
+
     if (!updatedBanner) {
       return res.status(404).json({
         success: false,
         message: 'Banner not found',
       });
     }
+
     res.status(200).json({
       success: true,
       message: 'Banner updated successfully',
@@ -94,6 +99,7 @@ const updateBanner = async (req, res) => {
   }
 };
 
+// ======================= DELETE BANNER =======================
 const deleteBanner = async (req, res) => {
   try {
     const { id } = req.params;
@@ -106,12 +112,12 @@ const deleteBanner = async (req, res) => {
       });
     }
 
-    // ইমেজ ডিলিট
+    // ইমেজ ডিলিট (ফাইল সিস্টেম থেকে)
     if (banner.image) {
-      deleteFile(banner.image);
+      deleteFile(`src${banner.image}`); // src/uploads/... ঠিক path
     }
 
-    // ডাটাবেস থেকে banner ডিলিট
+    // ডাটাবেস থেকে ডিলিট
     await Banner.findByIdAndDelete(id);
 
     res.status(200).json({

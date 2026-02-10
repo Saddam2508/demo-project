@@ -54,6 +54,7 @@ const BannerSetting: FC = () => {
 
   //useEffect for fetch banner
 
+  console.log(banners);
   useEffect(() => {
     dispatch(fetchBanner());
   }, [dispatch]);
@@ -364,7 +365,9 @@ const BannerSetting: FC = () => {
                   <td className="p-2">{banner.subTitle}</td>
                   <td className="p-2">{banner.link}</td>
                   <td className="p-2">{banner.position}</td>
-                  <td className="p-2">{banner.active ? 'Yes' : 'No'}</td>
+                  <td className="p-2">
+                    {banner.isActive === true ? 'Yes' : 'No'}
+                  </td>
                   <td className="p-2">
                     {banner.image && (
                       <Image
