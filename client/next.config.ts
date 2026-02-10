@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ['localhost'], // এখানে আপনার backend hostname দিন
+  },
 };
 
 export default nextConfig;
