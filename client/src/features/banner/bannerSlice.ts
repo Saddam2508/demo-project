@@ -33,7 +33,7 @@ export const createBanner = createAsyncThunk<
 >('banner/create', async (data, { rejectWithValue }) => {
   try {
     const res = await api.post('/banners', data);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     return rejectWithValue(errMsg(error));
   }
@@ -46,7 +46,7 @@ export const updateBanner = createAsyncThunk<
 >('banner/update', async ({ id, data }, { rejectWithValue }) => {
   try {
     const res = await api.put(`banners/${id}`, data);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     return rejectWithValue(errMsg(error));
   }
@@ -59,7 +59,7 @@ export const deleteBanner = createAsyncThunk<
 >('banner/delete', async (id, { rejectWithValue }) => {
   try {
     const res = await api.delete(`banners/${id}`);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     return rejectWithValue(errMsg(error));
   }

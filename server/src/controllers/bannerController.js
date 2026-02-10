@@ -3,7 +3,7 @@ const Banner = require('../models/bannerModel');
 const createBanner = async (req, res) => {
   try {
     const { title, subTitle, link, position, isActive } = req.body || {};
-    console.log(req.body);
+
     const image = req.file ? req.file.path : null;
     if (!title) {
       throw new Error('Title is required');
@@ -25,7 +25,7 @@ const createBanner = async (req, res) => {
     };
 
     const banner = await Banner.create(bannerData);
-    console.log('Banner created:', banner);
+
     // Save bannerData to database
     res.status(201).json({
       success: true,

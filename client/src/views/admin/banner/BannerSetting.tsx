@@ -58,23 +58,7 @@ const BannerSetting: FC = () => {
     dispatch(fetchBanner());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (banners && banners.length > 0) {
-      Promise.resolve().then(() => {
-        setFormData((prev) => ({
-          ...prev,
-          title: banners[0].title || '',
-          subTitle: banners[0].subTitle || '',
-          link: banners[0].link || '',
-          position: banners[0].position || 0,
-          isActive: banners[0].isActive || false,
-          previewImage: banners[0].image || '',
-        }));
-      });
-    }
-  }, [banners]); // <- এখানে dependency
-  // handle Change function
-
+  // change handler
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
     if (name === 'image' && files?.[0]) {
@@ -163,6 +147,8 @@ const BannerSetting: FC = () => {
     del.status === 'pending';
 
   const handleEdit = (id: string) => {
+    setEditIndex(id);
+    if (!editIndex) return null;
     const banner = banners.find((b) => b._id === id);
     if (!banner) {
       toast.error('Banner not found');
@@ -178,7 +164,6 @@ const BannerSetting: FC = () => {
         image: null,
         previewImage: banner.image || '',
       });
-      setEditIndex(id);
     }
   };
 
@@ -362,8 +347,11 @@ const BannerSetting: FC = () => {
                   'Image',
                   'edit',
                   'delete',
-                ].map((header) => (
-                  <th key={header} className="text-left p-2 border-b">
+                ].map((header, idx) => (
+                  <th
+                    key={`${header}-${idx}`}
+                    className="text-left p-2 border-b"
+                  >
                     {header}
                   </th>
                 ))}
@@ -371,7 +359,7 @@ const BannerSetting: FC = () => {
             </thead>
             <tbody>
               {banners.map((banner, index) => (
-                <tr key={banner._id} className="border-b">
+                <tr key={banner._id ?? `banner-${index}`} className="border-b">
                   <td className="p-2"> {index + 1} </td>
                   <td className="p-2">{banner.title}</td>
                   <td className="p-2">{banner.subTitle}</td>
