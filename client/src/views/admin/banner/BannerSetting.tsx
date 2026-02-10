@@ -2,6 +2,7 @@
 
 import {
   createBanner,
+  deleteBanner,
   fetchBanner,
   updateBanner,
 } from '@/features/banner/bannerSlice';
@@ -51,6 +52,27 @@ const BannerSetting: FC = () => {
   const [editIndex, setEditIndex] = useState<string>('');
   const [error, setError] = useState<string>('');
 
+  //useEffect for fetch banner
+
+  useEffect(() => {
+    dispatch(fetchBanner());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (banners && banners.length > 0) {
+      Promise.resolve().then(() => {
+        setFormData((prev) => ({
+          ...prev,
+          title: banners[0].title || '',
+          subTitle: banners[0].subTitle || '',
+          link: banners[0].link || '',
+          position: banners[0].position || 0,
+          isActive: banners[0].isActive || false,
+          previewImage: banners[0].image || '',
+        }));
+      });
+    }
+  }, [banners]); // <- এখানে dependency
   // handle Change function
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +121,8 @@ const BannerSetting: FC = () => {
         .unwrap()
         .then(() => {
           setEditIndex('');
-          toast.success('Banner update successfully');
           setFormData(initialForm);
+          toast.success('Banner update successfully');
         })
         .catch(() => {
           toast.error('Banner update failed');
@@ -109,8 +131,8 @@ const BannerSetting: FC = () => {
       dispatch(createBanner(fd))
         .unwrap()
         .then(() => {
-          toast.success('Banner create successfully');
           setFormData(initialForm);
+          toast.success('Banner create successfully');
         })
         .catch(() => {
           toast.error('Banner create failed');
@@ -129,7 +151,7 @@ const BannerSetting: FC = () => {
     });
     const timer = setTimeout(() => {
       setError('');
-    }, 3000);
+    }, 20000);
     return () => clearTimeout(timer);
   }, [fetch.error, create.error, update.error, del.error]);
 
@@ -139,6 +161,38 @@ const BannerSetting: FC = () => {
     create.status === 'pending' ||
     update.status === 'pending' ||
     del.status === 'pending';
+
+  const handleEdit = (id: string) => {
+    const banner = banners.find((b) => b._id === id);
+    if (!banner) {
+      toast.error('Banner not found');
+      return;
+    }
+    if (banner) {
+      setFormData({
+        title: banner.title || '',
+        subTitle: banner.subTitle || '',
+        link: banner.link || '',
+        position: banner.position || 0,
+        isActive: banner.isActive || false,
+        image: null,
+        previewImage: banner.image || '',
+      });
+      setEditIndex(id);
+    }
+  };
+
+  // delete handler
+  const handleDelete = (id: string) => {
+    dispatch(deleteBanner(id))
+      .unwrap()
+      .then(() => {
+        toast.success('Banner deleted successfully');
+      })
+      .catch(() => {
+        toast.error('Banner delete failed');
+      });
+  };
 
   return (
     <div className="container pt-7">
@@ -286,19 +340,34 @@ const BannerSetting: FC = () => {
           </fieldset>
         </form>
       </div>
-      <div>{error && <p className="text-red-500">{error}</p>} </div>
+      <div>
+        {error && (
+          <p className="text-red-500 flex justify-center mt-2">{error}</p>
+        )}{' '}
+      </div>
+
       {/* banner list */}
       <div className="banner-list  flex justify-center mt-10">
         {banners && banners.length > 0 ? (
           <table className="w-2xl border-collapse border border-gray-300">
             <thead>
-              {['Title', 'Subtitle', 'Link', 'Position', 'Active', 'Image'].map(
-                (header) => (
+              <tr>
+                {[
+                  'id',
+                  'Title',
+                  'Subtitle',
+                  'Link',
+                  'Position',
+                  'Active',
+                  'Image',
+                  'edit',
+                  'delete',
+                ].map((header) => (
                   <th key={header} className="text-left p-2 border-b">
                     {header}
                   </th>
-                )
-              )}
+                ))}
+              </tr>
             </thead>
             <tbody>
               {banners.map((banner, index) => (
@@ -319,6 +388,22 @@ const BannerSetting: FC = () => {
                         height={50}
                       />
                     )}
+                  </td>
+                  <td className="p-2">
+                    <button
+                      onClick={() => handleEdit(banner._id!)}
+                      className="bg-red-300 py-1 px-2 rounded-lg cursor-pointer hover:bg-amber-500 text-white"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td className="p-2">
+                    <button
+                      onClick={() => handleDelete(banner._id!)}
+                      className="bg-red-500 py-1 px-2 rounded-lg cursor-pointer hover:bg-amber-500 text-white"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
