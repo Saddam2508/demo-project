@@ -8,11 +8,17 @@ import {
 } from '@/features/banner/bannerSlice';
 import { useAppDispatch, useAppSelector } from '@/hook/hooks';
 import Image from 'next/image';
-import React, { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  MouseEvent,
+  useEffect,
+  useState,
+} from 'react';
 import toast from 'react-hot-toast';
 
 const BannerSetting: FC = () => {
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();  
   const {
     banners,
     fetch,
@@ -27,8 +33,8 @@ const BannerSetting: FC = () => {
     link: '';
     position: number;
     isActive: boolean;
-    image: File[];
-    previewImage: string[];
+    image: File | null;
+    previewImage: string;
   }
 
   const initialForm: BannerForm = {
@@ -37,8 +43,8 @@ const BannerSetting: FC = () => {
     link: '',
     position: 0,
     isActive: false,
-    image: [],
-    previewImage: [],
+    image: null,
+    previewImage: '',
   };
 
   const [formData, setFormData] = useState<BannerForm>(initialForm);
@@ -54,16 +60,11 @@ const BannerSetting: FC = () => {
   // change handler
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
-
-    if (name === 'image' && files && files.length > 0) {
-      const filesArray = Array.from(files);
+    if (name === 'image' && files?.[0]) {
       setFormData((prev) => ({
         ...prev,
-        image: [...prev.image, ...filesArray],
-        previewImage: [
-          ...prev.previewImage,
-          ...filesArray.map((file) => URL.createObjectURL(file)),
-        ],
+        image: files?.[0],
+        previewImage: URL.createObjectURL(files?.[0]),
       }));
     } else {
       setFormData((prev) => ({
@@ -90,11 +91,7 @@ const BannerSetting: FC = () => {
     if (formData.link) fd.append('link', formData.link);
     if (formData.position) fd.append('position', formData.position.toString());
     if (formData.isActive) fd.append('isActive', formData.isActive.toString());
-    if (formData.image && formData.image.length > 0) {
-      formData.image.forEach((file) => {
-        fd.append('image', file);
-      });
-    }
+    if (formData.image) fd.append('image', formData.image);
     if (editIndex) {
       dispatch(updateBanner({ id: editIndex, data: fd }))
         .unwrap()
@@ -154,8 +151,8 @@ const BannerSetting: FC = () => {
         link: banner.link || '',
         position: banner.position || 0,
         isActive: banner.isActive || false,
-        image: [],
-        previewImage: banner.image ? [...banner.image] : [],
+        image: null,
+        previewImage: banner.image || '',
       });
     }
     setEditIndex(id);
@@ -242,56 +239,39 @@ const BannerSetting: FC = () => {
                 Choose File
               </span>
               <span className="bg-gray-400 text-white px-2 py-2 rounded-lg">
-                {formData.image.length > 0
-                  ? `${formData.image.length} file(s) selected`
-                  : 'No File Chosen'}
+                {formData.image ? formData.image.name : 'No File Chosen'}
               </span>
             </label>
             <input
               type="file"
               name="image"
               id="imageUpload"
-              multiple
               className="hidden"
               onChange={handleChange}
             />
-            {/* preview image */}
-            <div className="mt-2">
-              {formData.previewImage.map((file, idx) => (
-                <div key={idx} className="relative">
+            <div>
+              {formData.previewImage && (
+                <>
                   <Image
                     loader={({ src }) => src}
-                    src={file}
-                    alt={`preview-${idx}`}
+                    src={formData.previewImage}
+                    alt=""
                     width={50}
                     height={50}
-                    className="object-cover rounded"
                   />
                   <button
-                    type="button"
-                    className="absolute top-0 right-0 bg-red-500 text-white px-1 rounded"
                     onClick={() => {
-                      // remove specific image
-                      setFormData((prev) => {
-                        const newImages = prev.image.filter(
-                          (_, i) => i !== idx
-                        );
-
-                        const newPreviews = prev.previewImage.filter(
-                          (_, i) => i !== idx
-                        );
-                        return {
-                          ...prev,
-                          images: newImages,
-                          previewImage: newPreviews,
-                        };
-                      });
+                      setFormData((prev) => ({
+                        ...prev,
+                        image: null,
+                        previewImage: '',
+                      }));
                     }}
                   >
-                    X
+                    Remove
                   </button>
-                </div>
-              ))}
+                </>
+              )}
             </div>
           </fieldset>
 
@@ -380,10 +360,10 @@ const BannerSetting: FC = () => {
                     {banner.isActive === true ? 'Yes' : 'No'}
                   </td>
                   <td className="p-2">
-                    {banner.image && banner.image.length > 0 && (
+                    {banner.image && (
                       <Image
                         loader={({ src }) => src}
-                        src={banner.image[0]} // প্রথম ছবি
+                        src={banner.image}
                         alt=""
                         width={50}
                         height={50}

@@ -5,8 +5,8 @@ export interface Banner {
   link: '';
   position: number;
   isActive: boolean;
-  image: '';
-  previewImage: string;
+  image: string[];
+
   [key: string]: unknown;
 }
 

@@ -8,9 +8,10 @@ const path = require('path');
 const deleteFile = (filePath) => {
   try {
     if (!filePath) return;
-
+   
     // Absolute path তৈরি করা
     const fullPath = path.join(process.cwd(), filePath);
+    
 
     // যদি file থাকে
     if (fs.existsSync(fullPath)) {

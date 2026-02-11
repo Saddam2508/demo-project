@@ -62,6 +62,7 @@ const updateBanner = async (req, res) => {
     const { title, subTitle, link, position, isActive } = req.body || {};
 
     const image = req.file ? req.file.path : null;
+  
 
     const updateData = {
       title,
