@@ -46,7 +46,6 @@ const BannerSetting: FC = () => {
   const [error, setError] = useState<string>('');
 
   //useEffect for fetch banner
-
   useEffect(() => {
     dispatch(fetchBanner());
   }, [dispatch]);
@@ -381,13 +380,19 @@ const BannerSetting: FC = () => {
                   </td>
                   <td className="p-2">
                     {banner.image && banner.image.length > 0 && (
-                      <Image
-                        loader={({ src }) => src}
-                        src={banner.image[0]} // প্রথম ছবি
-                        alt=""
-                        width={50}
-                        height={50}
-                      />
+                      <div className="flex gap-2">
+                        {banner.image.map((img, idx) => (
+                          <Image
+                            key={idx}
+                            loader={({ src }) => src}
+                            src={img}
+                            alt=""
+                            width={50}
+                            height={50}
+                            className="object-cover rounded"
+                          />
+                        ))}
+                      </div>
                     )}
                   </td>
                   <td className="p-2">

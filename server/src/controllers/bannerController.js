@@ -4,7 +4,9 @@ const Banner = require('../models/bannerModel');
 const createBanner = async (req, res) => {
   try {
     const { title, subTitle, link, position, isActive } = req.body || {};
-    const image = req.file ? req.file.path : null;
+
+    const image = req.files ? req.files.map((file) => file.path) : [];
+
     if (!title) {
       throw new Error('Title is required');
     }
@@ -62,7 +64,6 @@ const updateBanner = async (req, res) => {
     const { title, subTitle, link, position, isActive } = req.body || {};
 
     const image = req.file ? req.file.path : null;
-  
 
     const updateData = {
       title,
