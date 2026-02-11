@@ -24,8 +24,9 @@ const bannerSchema = new mongoose.Schema(
       default: true,
     },
     image: {
-      type: String,
+      type: [String],
       trim: true,
+      default: [],
     },
   },
   { timestamps: true }
