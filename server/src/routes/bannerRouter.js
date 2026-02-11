@@ -9,7 +9,7 @@ const upload = require('../middlewares/uploadMiddleware');
 const bannerRouter = express.Router();
 
 bannerRouter.get('/', getBanners);
-bannerRouter.post('/', upload.single('image'), createBanner);
+bannerRouter.post('/', upload.array('image'), createBanner);
 bannerRouter.put('/:id', upload.single('image'), updateBanner);
 bannerRouter.delete('/:id', deleteBanner);
 
